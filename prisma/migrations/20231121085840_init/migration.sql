@@ -34,7 +34,7 @@ CREATE TABLE "role_user" (
 );
 
 -- CreateTable
-CREATE TABLE "Auth" (
+CREATE TABLE "auths" (
     "id" CHAR(36) NOT NULL,
     "user_id" VARCHAR(255) NOT NULL,
     "provider" "Provider" NOT NULL DEFAULT 'local',
@@ -42,7 +42,7 @@ CREATE TABLE "Auth" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Auth_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "auths_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
