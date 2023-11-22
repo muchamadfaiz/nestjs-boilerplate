@@ -3,17 +3,21 @@ import { TaskRepository } from './task.repository';
 import { Task } from '@prisma/client';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { FilterDto } from './dtos/filter-task.dto';
 
 @Injectable()
 export class TaskService {
   constructor(private taskRepository: TaskRepository) {}
 
-  async getTasks(): Promise<Task[]> {
-    return this.taskRepository.getTasks();
+  async getTasks(filterDto: FilterDto): Promise<Task[]> {
+    return this.taskRepository.getTasks(filterDto);
   }
 
-  async getTasksByUserId(user_id: string): Promise<Task[]> {
-    return this.taskRepository.getTasksByUserId(user_id);
+  async getTasksByUserId(
+    user_id: string,
+    filterDto: FilterDto,
+  ): Promise<Task[]> {
+    return this.taskRepository.getTasksByUserId(user_id, filterDto);
   }
 
   async getTaskById(id: string): Promise<Task | null> {

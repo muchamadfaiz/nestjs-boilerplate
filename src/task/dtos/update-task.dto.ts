@@ -1,6 +1,6 @@
 // src/task/dtos/update-task.dto.ts
 
-import { Status } from '@prisma/client';
+import { TaskStatus } from '@prisma/client';
 import { IsOptional, IsString, IsEnum } from 'class-validator';
 
 export class UpdateTaskDto {
@@ -13,6 +13,6 @@ export class UpdateTaskDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(Status)
-  status?: Status;
+  @IsEnum(TaskStatus)
+  status?: TaskStatus;
 }

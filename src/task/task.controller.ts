@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task, User } from '@prisma/client';
@@ -17,6 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserRole } from 'src/auth/enums/user-role.enum';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { FilterDto } from './dtos/filter-task.dto';
 
 @Controller('tasks')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -25,19 +27,18 @@ export class TaskController {
 
   @Get('all')
   @Roles(UserRole.ADMIN)
-  async getTasks(): Promise<Task[]> {
-    return this.taskService.getTasks();
+  async getTasks(@Query() filterDto: FilterDto): Promise<Task[]> {
+    return this.taskService.getTasks(filterDto);
   }
 
   @Get('/:id')
   async getTaskById(@Param('id') id: string): Promise<Task | null> {
-    console.log('Param id:', id);
     return this.taskService.getTaskById(id);
   }
 
   @Get()
-  async getTasksByUserId(@GetUser() user: User) {
-    return this.taskService.getTasksByUserId(user.id);
+  async getTasksByUserId(@GetUser() user: User, @Query() filterDto: FilterDto) {
+    return this.taskService.getTasksByUserId(user.id, filterDto);
   }
 
   @Post()
