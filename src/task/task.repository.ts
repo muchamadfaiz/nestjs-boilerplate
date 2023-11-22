@@ -9,11 +9,12 @@ export class TaskRepository {
   constructor(private prisma: PrismaService) {}
 
   async getTasks(): Promise<Task[]> {
-    return this.prisma.task.findMany();
+    return this.prisma.task.findMany({ orderBy: { updated_at: 'desc' } });
   }
 
   async getTasksByUserId(user_id: string): Promise<Task[]> {
     return this.prisma.task.findMany({
+      orderBy: { updated_at: 'desc' },
       where: { user_id },
     });
   }
