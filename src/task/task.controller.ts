@@ -27,7 +27,10 @@ export class TaskController {
 
   @Get('all')
   @Roles(UserRole.ADMIN)
-  async getTasks(@Query() filterDto: FilterDto): Promise<Task[]> {
+  async getTasks(@Query() filterDto: FilterDto): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
     return this.taskService.getTasks(filterDto);
   }
 
@@ -37,7 +40,13 @@ export class TaskController {
   }
 
   @Get()
-  async getTasksByUserId(@GetUser() user: User, @Query() filterDto: FilterDto) {
+  async getTasksByUserId(
+    @GetUser() user: User,
+    @Query() filterDto: FilterDto,
+  ): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
     return this.taskService.getTasksByUserId(user.id, filterDto);
   }
 

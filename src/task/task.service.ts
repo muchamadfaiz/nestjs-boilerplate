@@ -9,14 +9,20 @@ import { FilterDto } from './dtos/filter-task.dto';
 export class TaskService {
   constructor(private taskRepository: TaskRepository) {}
 
-  async getTasks(filterDto: FilterDto): Promise<Task[]> {
+  async getTasks(filterDto: FilterDto): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
     return this.taskRepository.getTasks(filterDto);
   }
 
   async getTasksByUserId(
     user_id: string,
     filterDto: FilterDto,
-  ): Promise<Task[]> {
+  ): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
     return this.taskRepository.getTasksByUserId(user_id, filterDto);
   }
 

@@ -9,8 +9,14 @@ import { FilterDto } from './dtos/filter-task.dto';
 export class TaskRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getTasks(filterDto: FilterDto): Promise<Task[]> {
-    const { status, search } = filterDto;
+  async getTasks(filterDto: FilterDto): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
+    let { status, search, limit, page } = filterDto;
+    page = page || 1;
+    limit = limit || 10;
+    const skip = (page - 1) * limit;
 
     const whereCondition = {};
 
@@ -29,18 +35,38 @@ export class TaskRepository {
       ];
     }
 
-    return this.prisma.task.findMany({
+    const tasks = await this.prisma.task.findMany({
       where: whereCondition,
       orderBy: { updated_at: 'desc' },
+      skip: skip,
+      take: limit,
     });
+
+    const totalTasksCount = await this.prisma.task.count({
+      where: whereCondition,
+    });
+    const totalPages = Math.ceil(totalTasksCount / limit);
+
+    return {
+      data: tasks,
+      meta: {
+        current_page: page,
+        total_pages: totalPages,
+      },
+    };
   }
 
   async getTasksByUserId(
     user_id: string,
     filterDto: FilterDto,
-  ): Promise<Task[]> {
-    const { status, search } = filterDto;
-
+  ): Promise<{
+    data: Task[];
+    meta: { current_page: number; total_pages: number };
+  }> {
+    let { status, search, page, limit } = filterDto;
+    page = page || 1;
+    limit = limit || 10;
+    const skip = (page - 1) * limit;
     const whereCondition = { user_id };
 
     if (status) {
@@ -55,10 +81,25 @@ export class TaskRepository {
         { description: { contains: search, mode: 'insensitive' } },
       ];
     }
-    return this.prisma.task.findMany({
+    const tasks = await this.prisma.task.findMany({
+      where: whereCondition,
       orderBy: { updated_at: 'desc' },
+      skip: skip,
+      take: limit,
+    });
+
+    const totalTasksCount = await this.prisma.task.count({
       where: whereCondition,
     });
+    const totalPages = Math.ceil(totalTasksCount / limit);
+
+    return {
+      data: tasks,
+      meta: {
+        current_page: page,
+        total_pages: totalPages,
+      },
+    };
   }
 
   async getTaskById(id: string): Promise<Task | null> {
