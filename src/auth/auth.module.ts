@@ -5,17 +5,27 @@ import { UserModule } from 'src/user/user.module';
 import { AuthRepository } from './auth.repository';
 import { RoleModule } from 'src/role/role.module';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository],
+  providers: [AuthService, AuthRepository, JwtStrategy],
   imports: [
+    ConfigModule,
     UserModule,
     RoleModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET, // Atau konfigurasi lainnya sesuai kebutuhan
-      signOptions: { expiresIn: '60m' }, // Contoh waktu kadaluwarsa token
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: {
+          expiresIn: '1h',
+        },
+      }),
     }),
   ],
+  exports: [JwtStrategy],
 })
 export class AuthModule {}
